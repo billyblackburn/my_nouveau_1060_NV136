@@ -1,0 +1,129 @@
+﻿https://envytools.readthedocs.io/en/latest/hw/pciid.html#gp106
+
+
+PCI id:
+0x1c03
+	GP106 [GeForce GTX 1060 6GB]
+	
+
+nVidia uses PCI vendor id of 0x10de, which covers almost all of their products.
+GP106¶
+device id
+	product
+	0x1c02
+	GP106 [GeForce GTX 1060 3GB]
+	0x1c03
+	GP106 [GeForce GTX 1060 6GB]
+	0x1c20
+	GP106 [GeForce GTX 1060 Mobile]
+	0x1c23
+	GP106 [GeForce GTX 1060]
+	0x1c60
+	GP106 [GeForce GTX 1060 Mobile]
+	0x1c61
+	GP106 [GeForce GTX 1050 Ti Mobile]
+	0x1c62
+	GP106 [GeForce GTX 1050 Mobile]
+	
+
+The PCI device ids with vendor id 0x10de are:
+0x1c00-0x1b7f
+	GP106
+	
+
+Verification:
+----------------glxinfo
+[tertl3@fedora ~]$ glxinfo
+Extended renderer info (GLX_MESA_query_renderer):
+    Vendor: nouveau (0x10de)
+    Device: NV136 (0x1c03)
+    Version: 21.0.1
+    Accelerated: yes
+    Video memory: 5997MB
+    Unified memory: no
+    Preferred profile: core (0x1)
+    Max core profile version: 4.3
+    Max compat profile version: 4.3
+    Max GLES1 profile version: 1.1
+    Max GLES[23] profile version: 3.2
+[tertl3@fedora ~]$ sudo nva
+nvacounter          nvalist             nvaupload
+nvactxinfo          nvamemtiming        nvavucstart
+nvadownload         nvammiotracereplay  nvawatch
+nvaevo              nvapeek             nvaxtinsn
+nvafakebios         nvapeeki            nvaxtpeek
+nvafill             nvapeekstat         nvaxtpoke
+nvaforcetemp        nvapms              nvaxtrsr
+nvafucstart         nvapoke             nvaxtssr
+nvafuzz             nvascan             nvaxtstart
+nvagetbios          nvaspyi2c           nvaxttime
+nvagetpmu           nvastrscan          
+nvahammer           nvatiming
+           
+[tertl3@fedora ~]$ sudo nvactxinfo 
+Card: NV136
+SM  count             : 10
+GPC count             : 2
+  GPC[ 0] TPCs        : 5
+  GPC[ 0] base size   : 2468 bytes
+  GPC[ 0] strand size : 63528 bytes
+    TPC[ 0] strands   : 437376 bytes
+    TPC[ 1] strands   : 437376 bytes
+    TPC[ 2] strands   : 437376 bytes
+    TPC[ 3] strands   : 437376 bytes
+    TPC[ 4] strands   : 437376 bytes
+  GPC[ 0] TPC size    : 2186880 bytes
+  GPC[ 0] ctx size    : 2252876 bytes
+  GPC[ 0] ctx area    : 0 bytes
+  GPC[ 1] TPCs        : 5
+  GPC[ 1] base size   : 2468 bytes
+  GPC[ 1] strand size : 63528 bytes
+    TPC[ 0] strands   : 437376 bytes
+    TPC[ 1] strands   : 437376 bytes
+    TPC[ 2] strands   : 437376 bytes
+    TPC[ 3] strands   : 437376 bytes
+    TPC[ 4] strands   : 437376 bytes
+  GPC[ 1] TPC size    : 2186880 bytes
+  GPC[ 1] ctx size    : 2252876 bytes
+  GPC[ 1] ctx area    : 0 bytes
+GPC context size      : 4505752 bytes
+GPC context area      : 0 bytes
+
+
+HUB context size      : 71992 bytes
+Total context size    : 4577744 bytes
+Total context area    : 0 bytes
+
+
+[tertl3@fedora ~]$ vdpow 
+WARN: Can't probe 0000:01:00.0
+NVA init failed
+Failed to open VDPAU backend libvdpau_nvidia.so: cannot open shared object file: No such file or directory
+vdpow: /builddir/build/BUILD/envytools-20200810/vdpow/vdpow.c:1164: main: Assertion `ret == VDP_STATUS_OK' failed.
+Aborted (core dumped)
+
+
+[tertl3@fedora ~]$ sudo nvagetbios 
+No extraction method specified (using -s extraction_method). Autodetecting.
+Attempt to extract the vbios from card 0 (nv136) using PRAMIN.
+Invalid signature(0x55aa). You may want to try another retrieval method.
+Attempt to extract the vbios from card 0 (nv136) using PROM.
+Card has second bios
+Refusing to write BIOS image to a terminal - please redirect output to a file.
+Your strap peek is: 0x400080
+Please save this value in the same directory as your vbios as a file named strap_peek (or use -S)
+Vbios extracted successfully!
+
+
+[tertl3@fedora ~]$ sudo nvapeek 0x400080
+00400080: 003003d2
+[tertl3@fedora ~]$ sudo nvapeek 003003d2
+003003d2: 30303031
+
+
+[tertl3@fedora ~]$sudo nvagetbios --help
+nvagetbios: invalid option -- '-'
+
+
+Usage: nvagetbios [-c card_number] [-s extraction_method]
+                  [-S strap_peek_out] > vbios.rom
